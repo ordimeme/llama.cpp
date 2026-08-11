@@ -77,6 +77,7 @@ import {
 	detectMcpTransportFromUrl,
 	extractRootDomain,
 	isMcpServerEnabledByDefault,
+	normalizeLocalBridgeUrl,
 	parseMcpServerSettings,
 	uuid
 } from '$lib/utils';
@@ -151,7 +152,8 @@ class MCPStore {
 		}
 
 		return parsed.map((entry, index) => {
-			const url = typeof entry?.url === 'string' ? entry.url.trim() : '';
+			const rawUrl = typeof entry?.url === 'string' ? entry.url.trim() : '';
+			const url = rawUrl ? normalizeLocalBridgeUrl(rawUrl) : '';
 			const headers = typeof entry?.headers === 'string' ? entry.headers.trim() : undefined;
 
 			return {

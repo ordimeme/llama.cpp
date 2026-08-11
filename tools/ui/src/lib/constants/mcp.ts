@@ -29,7 +29,9 @@ export const MCP_PROTOCOL_VERSION = '2025-06-18';
 export const DEFAULT_MCP_CONFIG = {
 	capabilities: { tools: { listChanged: true } } as ClientCapabilities,
 	clientInfo: { name: MCP_CLIENT_NAME, version: DEFAULT_CLIENT_VERSION } as Implementation,
-	connectionTimeoutMs: 10_000, // 10 seconds for connection establishment
+	// 本地桥子进程冷启动需 2-12s（binance 最慢），官方默认 10s 会在
+	// proxy 刚重启后误判超时；放宽到 30s 覆盖冷启动窗口。
+	connectionTimeoutMs: 30_000,
 	protocolVersion: MCP_PROTOCOL_VERSION,
 	requestTimeoutSeconds: 300 // 5 minutes for long-running tools
 } as const;

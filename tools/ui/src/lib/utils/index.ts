@@ -131,6 +131,7 @@ export {
 	detectMcpTransportFromUrl,
 	isMcpServerEnabledByDefault,
 	isSensitiveMcpServer,
+	normalizeLocalBridgeUrl,
 	parseMcpServerSettings,
 	parseMcpServerSettingsWithLocalDefaults,
 	getMcpLogLevelIcon,

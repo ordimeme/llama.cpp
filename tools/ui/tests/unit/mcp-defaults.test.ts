@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	isMcpServerEnabledByDefault,
 	isSensitiveMcpServer,
+	parseMcpServerSettings,
 	parseMcpServerSettingsWithLocalDefaults
 } from '$lib/utils/mcp';
 import type { MCPServerSettingsEntry } from '$lib/types/mcp';
@@ -40,5 +41,18 @@ describe('MCP default enable policy', () => {
 
 	it('recovers the local defaults from an old explicitly empty configuration', () => {
 		expect(parseMcpServerSettingsWithLocalDefaults('[]')).toEqual(DEFAULT_LOCAL_MCP_SERVERS);
+	});
+
+	it('normalizes legacy /sse URLs for local bridges (streamable HTTP only)', () => {
+		const legacy = [
+			{ id: 'devops', name: 'DevOps', enabled: true, url: 'http://127.0.0.1:9101/sse' },
+			{ id: 'binance', name: 'Binance', enabled: true, url: 'http://127.0.0.1:9103/sse' },
+			{ id: 'external', name: 'External SSE', enabled: true, url: 'https://example.com/sse' }
+		];
+		const parsed = parseMcpServerSettings(JSON.stringify(legacy));
+		expect(parsed[0].url).toBe('http://127.0.0.1:9101/');
+		expect(parsed[1].url).toBe('http://127.0.0.1:9103/');
+		// 外部 SSE 服务器保持原样（非本地桥不归一化）
+		expect(parsed[2].url).toBe('https://example.com/sse');
 	});
 });

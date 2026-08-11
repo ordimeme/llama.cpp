@@ -91,7 +91,8 @@ export function parseMcpServerSettings(rawServers: unknown): MCPServerSettingsEn
 	if (!Array.isArray(parsed)) return [];
 
 	return parsed.map((entry, index) => {
-		const url = typeof entry?.url === 'string' ? entry.url.trim() : '';
+		const rawUrl = typeof entry?.url === 'string' ? entry.url.trim() : '';
+		const url = rawUrl ? normalizeLocalBridgeUrl(rawUrl) : '';
 		const headers = typeof entry?.headers === 'string' ? entry.headers.trim() : undefined;
 		const id =
 			typeof (entry as { id?: unknown })?.id === 'string' && (entry as { id?: string }).id?.trim()
@@ -108,6 +109,23 @@ export function parseMcpServerSettings(rawServers: unknown): MCPServerSettingsEn
 			useProxy: Boolean((entry as { useProxy?: unknown })?.useProxy)
 		} satisfies MCPServerSettingsEntry;
 	});
+}
+
+/**
+ * 本地 MCP 桥端点（127.0.0.1:9101-9106）。官方新版 WebUI 会把以 /sse 结尾的
+ * URL 识别为 SSE transport（GET /sse），而本地 bridge 只接受 POST JSON-RPC
+ * （streamable HTTP），因此旧配置里的 /sse 后缀会导致连接 405/超时。
+ */
+const LOCAL_BRIDGE_URL_RE = /^(https?:\/\/)(127\.0\.0\.1|localhost):91(?:0[1-6])(?:\/sse)?\/?$/i;
+
+/**
+ * 归一化本地桥 URL：去掉 /sse 后缀，强制走 streamable HTTP。
+ * 兼容浏览器 localStorage 中保存的旧版默认配置。
+ */
+export function normalizeLocalBridgeUrl(url: string): string {
+	// 注意：/sse 前的斜杠就是端口后的路径斜杠，替换为 '/' 而非空串，
+	// 保证归一化结果与默认配置一致（http://127.0.0.1:9101/）。
+	return LOCAL_BRIDGE_URL_RE.test(url) ? url.replace(/\/sse$/i, '/') : url;
 }
 
 /**
