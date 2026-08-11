@@ -12,7 +12,7 @@ function server(name: string, port: number, enabled = true): MCPServerSettingsEn
 		id: name,
 		name,
 		enabled,
-		url: `http://127.0.0.1:${port}/sse`
+		url: `http://127.0.0.1:${port}/`
 	};
 }
 

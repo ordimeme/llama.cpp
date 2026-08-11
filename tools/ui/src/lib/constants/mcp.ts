@@ -40,37 +40,37 @@ export const DEFAULT_LOCAL_MCP_SERVERS: MCPServerSettingsEntry[] = [
 		id: 'devops',
 		name: 'DevOps',
 		enabled: true,
-		url: 'http://127.0.0.1:9101/sse'
+		url: 'http://127.0.0.1:9101/'
 	},
 	{
 		id: 'shared_memory',
 		name: 'Shared Memory',
 		enabled: true,
-		url: 'http://127.0.0.1:9102/sse'
+		url: 'http://127.0.0.1:9102/'
 	},
 	{
 		id: 'binance',
 		name: 'Binance',
 		enabled: true,
-		url: 'http://127.0.0.1:9103/sse'
+		url: 'http://127.0.0.1:9103/'
 	},
 	{
 		id: 'proxy',
 		name: 'Proxy',
 		enabled: true,
-		url: 'http://127.0.0.1:9104/sse'
+		url: 'http://127.0.0.1:9104/'
 	},
 	{
 		id: 'search',
 		name: 'Search',
 		enabled: true,
-		url: 'http://127.0.0.1:9105/sse'
+		url: 'http://127.0.0.1:9105/'
 	},
 	{
 		id: 'filesystem',
 		name: 'Filesystem',
 		enabled: true,
-		url: 'http://127.0.0.1:9106/sse'
+		url: 'http://127.0.0.1:9106/'
 	}
 ];
 
