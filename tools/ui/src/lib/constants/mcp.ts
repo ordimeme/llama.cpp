@@ -1,7 +1,7 @@
 import { Globe, Radio, Zap } from '@lucide/svelte';
 import { MCPTransportType } from '$lib/enums';
 import { MimeTypeImage } from '$lib/enums/files.enums';
-import type { ClientCapabilities, Implementation } from '$lib/types';
+import type { ClientCapabilities, Implementation, MCPServerSettingsEntry } from '$lib/types';
 import type { Component } from 'svelte';
 
 export const DEFAULT_CLIENT_VERSION = '1.0.0';
@@ -33,6 +33,46 @@ export const DEFAULT_MCP_CONFIG = {
 	protocolVersion: MCP_PROTOCOL_VERSION,
 	requestTimeoutSeconds: 300 // 5 minutes for long-running tools
 } as const;
+
+/** Local bridge endpoints shipped with Henry's llama.cpp launcher. */
+export const DEFAULT_LOCAL_MCP_SERVERS: MCPServerSettingsEntry[] = [
+	{
+		id: 'devops',
+		name: 'DevOps',
+		enabled: true,
+		url: 'http://127.0.0.1:9101/sse'
+	},
+	{
+		id: 'shared_memory',
+		name: 'Shared Memory',
+		enabled: true,
+		url: 'http://127.0.0.1:9102/sse'
+	},
+	{
+		id: 'binance',
+		name: 'Binance',
+		enabled: true,
+		url: 'http://127.0.0.1:9103/sse'
+	},
+	{
+		id: 'proxy',
+		name: 'Proxy',
+		enabled: true,
+		url: 'http://127.0.0.1:9104/sse'
+	},
+	{
+		id: 'search',
+		name: 'Search',
+		enabled: true,
+		url: 'http://127.0.0.1:9105/sse'
+	},
+	{
+		id: 'filesystem',
+		name: 'Filesystem',
+		enabled: true,
+		url: 'http://127.0.0.1:9106/sse'
+	}
+];
 
 export const MCP_SERVER_ID_PREFIX = 'LlamaUI-MCP-Server';
 

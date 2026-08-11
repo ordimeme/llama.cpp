@@ -12,6 +12,7 @@ import {
 	Code,
 	Database,
 	Funnel,
+	Languages,
 	ListRestart,
 	Monitor,
 	Monitor as MonitorIcon,
@@ -56,6 +57,12 @@ const COLOR_MODE_OPTIONS: Array<{ value: string; label: string; icon: Component 
 	{ icon: MonitorIcon, label: 'System', value: ColorMode.SYSTEM },
 	{ icon: Sun, label: 'Light', value: ColorMode.LIGHT },
 	{ icon: Moon, label: 'Dark', value: ColorMode.DARK }
+];
+
+const LANGUAGE_OPTIONS: Array<{ value: string; label: string; icon: Component }> = [
+	{ icon: Languages, label: 'Auto (browser language)', value: 'auto' },
+	{ icon: Languages, label: '中文', value: 'zh' },
+	{ icon: Languages, label: 'English', value: 'en' }
 ];
 // Shared options for the title-generation radio group. Both paired registry entries
 // (USE_FIRST_LINE, USE_LLM) reference this list so labels stay in lockstep.
@@ -196,6 +203,15 @@ const SETTINGS_REGISTRY: Record<string, SettingsSectionEntry> = {
 	[SETTINGS_SECTION_SLUGS.DISPLAY]: {
 		icon: Monitor,
 		settings: [
+			{
+				defaultValue: 'auto',
+				help: 'Choose the display language. "Auto" follows your browser language. Changes take effect after page reload.',
+				key: SETTINGS_KEYS.LANGUAGE,
+				label: 'Language',
+				options: LANGUAGE_OPTIONS,
+				section: SETTINGS_SECTION_SLUGS.DISPLAY,
+				type: SettingsFieldType.SELECT
+			},
 			{
 				defaultValue: true,
 				help: 'Display generation statistics (tokens/second, token count, duration) below each assistant message.',

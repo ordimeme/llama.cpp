@@ -14,6 +14,7 @@ import {
 	DISPLAY_NAME_SEPARATOR_REGEX,
 	FILE_EXTENSION_REGEX,
 	IMAGE_FILE_EXTENSION_REGEX,
+	DEFAULT_LOCAL_MCP_SERVERS,
 	MCP_SERVER_ID_PREFIX,
 	MCP_SSE_ENDPOINT,
 	MCP_SSE_ENDPOINT_QUERY,
@@ -107,6 +108,42 @@ export function parseMcpServerSettings(rawServers: unknown): MCPServerSettingsEn
 			useProxy: Boolean((entry as { useProxy?: unknown })?.useProxy)
 		} satisfies MCPServerSettingsEntry;
 	});
+}
+
+/**
+ * Parses raw server settings, falling back to the local bridge defaults
+ * when nothing is configured.
+ */
+export function parseMcpServerSettingsWithLocalDefaults(
+	rawServers: unknown
+): MCPServerSettingsEntry[] {
+	const configured = parseMcpServerSettings(rawServers);
+	return configured.length > 0
+		? configured
+		: DEFAULT_LOCAL_MCP_SERVERS.map((server) => ({ ...server }));
+}
+
+const DEFAULT_DISABLED_MCP_SERVER_PATTERN = /(^|[\s_.:/-])(binance|devops)(?=$|[\s_.:/-])/i;
+const DEFAULT_DISABLED_LOCAL_MCP_PORT_PATTERN = /(?:127\.0\.0\.1|localhost):(?:9101|9103)(?:\/|$)/i;
+
+/**
+ * Flags servers whose id/name/url identify the sensitive local bridges
+ * (Binance trading, DevOps). These stay visible but are not chat-enabled by default.
+ */
+export function isSensitiveMcpServer(server: MCPServerSettingsEntry): boolean {
+	return [server.id, server.name, server.url].some(
+		(value) =>
+			typeof value === 'string' &&
+			(DEFAULT_DISABLED_MCP_SERVER_PATTERN.test(value.trim()) ||
+				DEFAULT_DISABLED_LOCAL_MCP_PORT_PATTERN.test(value.trim()))
+	);
+}
+
+/**
+ * Default chat-enable policy for a server: enabled, has a URL, and not sensitive.
+ */
+export function isMcpServerEnabledByDefault(server: MCPServerSettingsEntry): boolean {
+	return Boolean(server.enabled && server.url.trim() && !isSensitiveMcpServer(server));
 }
 
 /**

@@ -58,6 +58,8 @@ export const SETTINGS_KEYS = {
 	SHOW_RAW_MODEL_NAMES: 'showRawModelNames',
 	SHOW_RAW_OUTPUT_SWITCH: 'showRawOutputSwitch',
 	SHOW_SYSTEM_MESSAGE: 'showSystemMessage',
+	// Language
+	LANGUAGE: 'language',
 	SHOW_THOUGHT_IN_PROGRESS: 'showThoughtInProgress',
 	SYMBOLIC_MATH_ENABLED: 'symbolicMathEnabled',
 	SYSTEM_MESSAGE: 'systemMessage',

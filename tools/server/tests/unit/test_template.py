@@ -30,7 +30,9 @@ def create_server():
     ("deepseek-ai-DeepSeek-R1-Distill-Qwen-32B", "off", "<think>\n</think>"),
 
     ("Qwen-Qwen3-0.6B","auto", "<|im_start|>assistant\n"),
+    ("Qwen-Qwen3.6-35B-A3B","auto", "<|im_start|>assistant\n"),
     ("Qwen-Qwen3-0.6B", "off", "<|im_start|>assistant\n<think>\n\n</think>\n\n"),
+    ("Qwen-Qwen3.6-35B-A3B", "off", "<|im_start|>assistant\n<think>\n\n</think>\n\n"),
 
     ("Qwen-QwQ-32B","auto", "<|im_start|>assistant\n<think>\n"),
     ("Qwen-QwQ-32B", "off", "<|im_start|>assistant\n<think>\n</think>"),

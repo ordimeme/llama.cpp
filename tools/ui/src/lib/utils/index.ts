@@ -129,7 +129,10 @@ export { parseSseJsonStream, type SseJsonEvent } from './sse';
 // MCP utilities
 export {
 	detectMcpTransportFromUrl,
+	isMcpServerEnabledByDefault,
+	isSensitiveMcpServer,
 	parseMcpServerSettings,
+	parseMcpServerSettingsWithLocalDefaults,
 	getMcpLogLevelIcon,
 	getMcpLogLevelClass,
 	isImageMimeType,

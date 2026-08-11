@@ -27,6 +27,7 @@ import { browser } from '$app/environment';
 import { SETTINGS_KEYS } from '$lib/constants';
 import {
 	DEFAULT_CACHE_TTL_MS,
+	DEFAULT_LOCAL_MCP_SERVERS,
 	DEFAULT_MCP_CONFIG,
 	EXPECTED_THEMED_ICON_PAIR_COUNT,
 	MCP_ALLOWED_ICON_MIME_TYPES,
@@ -75,6 +76,7 @@ import type { SettingsConfigType } from '$lib/types/settings';
 import {
 	detectMcpTransportFromUrl,
 	extractRootDomain,
+	isMcpServerEnabledByDefault,
 	parseMcpServerSettings,
 	uuid
 } from '$lib/utils';
@@ -114,8 +116,10 @@ class MCPStore {
 	 * Parses raw server settings from config into MCPServerSettingsEntry array.
 	 */
 	#parseServerSettings(rawServers: unknown): MCPServerSettingsEntry[] {
+		const fallbackToLocalDefaults = () => DEFAULT_LOCAL_MCP_SERVERS.map((server) => ({ ...server }));
+
 		if (!rawServers) {
-			return [];
+			return fallbackToLocalDefaults();
 		}
 
 		let parsed: unknown;
@@ -124,7 +128,7 @@ class MCPStore {
 			const trimmed = rawServers.trim();
 
 			if (!trimmed) {
-				return [];
+				return fallbackToLocalDefaults();
 			}
 
 			try {
@@ -132,14 +136,18 @@ class MCPStore {
 			} catch (error) {
 				console.warn('[MCP] Failed to parse mcpServers JSON:', error);
 
-				return [];
+				return fallbackToLocalDefaults();
 			}
 		} else {
 			parsed = rawServers;
 		}
 
 		if (!Array.isArray(parsed)) {
-			return [];
+			return fallbackToLocalDefaults();
+		}
+
+		if (parsed.length === 0) {
+			return fallbackToLocalDefaults();
 		}
 
 		return parsed.map((entry, index) => {
@@ -212,12 +220,17 @@ class MCPStore {
 		server: MCPServerSettingsEntry,
 		perChatOverrides?: McpServerOverride[]
 	): boolean {
-		// Per-chat overrides win when present; missing entries inherit the
-		// server's own `enabled` flag so partial override lists are not all
-		// treated as disabled.
+		// A server disabled in settings is never chat-enabled.
+		if (!server.enabled || !server.url.trim()) {
+			return false;
+		}
+
+		// Per-chat overrides win when present; missing entries resolve to
+		// the local default policy (sensitive bridges like Binance/DevOps
+		// stay visible but are not chat-enabled by default).
 		const override = perChatOverrides?.find((o) => o.serverId === server.id);
 
-		return override?.enabled ?? server.enabled;
+		return override?.enabled ?? isMcpServerEnabledByDefault(server);
 	}
 
 	/**
@@ -377,7 +390,11 @@ class MCPStore {
 	}
 
 	getServers(): MCPServerSettingsEntry[] {
-		return parseMcpServerSettings(config().mcpServers);
+		const configured = parseMcpServerSettings(config().mcpServers);
+
+		return configured.length > 0
+			? configured
+			: DEFAULT_LOCAL_MCP_SERVERS.map((server) => ({ ...server }));
 	}
 
 	/**
